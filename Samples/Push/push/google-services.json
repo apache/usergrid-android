@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "186455511595",
+    "firebase_url": "https://apigeepush.firebaseio.com",
+    "project_id": "apigeepush",
+    "storage_bucket": "apigeepush.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:186455511595:android:7ac854c0e66d35f3",
+        "android_client_info": {
+          "package_name": "org.apache.usergrid.push"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "186455511595-p2o4g7iug5e4tcp9vtriqqo691bhmk9h.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.apache.usergrid.push",
+            "certificate_hash": "40B96A76FEA181EC71BB8E86ECD42407C469F898"
+          }
+        },
+        {
+          "client_id": "186455511595-ge27hngtfbn214e0499ufmtmnorfdptr.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "186455511595-d6kc7n52d5fq2o6g5lakqs0v6gib3h10.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDFqoXcWKR_c-XPxHsD7slYv0dXEksQWhA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
