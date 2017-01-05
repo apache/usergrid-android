@@ -6,57 +6,19 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
 
-import com.google.android.gcm.GCMBaseIntentService;
+import com.google.firebase.messaging.FirebaseMessagingService;
+import com.google.firebase.messaging.RemoteMessage;
 
 import org.apache.usergrid.activityfeed.activities.MainActivity;
 
-public class GCMIntentService extends GCMBaseIntentService {
-
-    public GCMIntentService() {
-        super(UsergridManager.GCM_SENDER_ID);
-    }
+public class PushMessageListenerService extends FirebaseMessagingService {
 
     @Override
-    protected void onRegistered(Context context, String registrationId) {
-        Log.i(TAG, "Device registered: " + registrationId);
-        UsergridManager.registerPush(context,registrationId);
+    public void onMessageReceived(RemoteMessage message){
+        PushMessageListenerService.generateNotification(this,message.getData().get("data"));
     }
 
-    @Override
-    protected void onUnregistered(Context context, String registrationId) {
-        Log.i(TAG, "Device unregistered");
-    }
-
-    @Override
-    protected void onMessage(Context context, Intent intent) {
-        String message = intent.getExtras().getString("data");
-        Log.i(TAG, "Received message: " + message);
-        generateNotification(context, message);
-    }
-
-    @Override
-    protected void onDeletedMessages(Context context, int total) {
-        Log.i(TAG, "Received deleted messages notification");
-        String message = "GCM server deleted " + total +" pending messages!";
-        generateNotification(context, message);
-    }
-
-    @Override
-    public void onError(Context context, String errorId) {
-        Log.i(TAG, "Received error: " + errorId);
-    }
-
-    @Override
-    protected boolean onRecoverableError(Context context, String errorId) {
-        Log.i(TAG, "Received recoverable error: " + errorId);
-        return super.onRecoverableError(context, errorId);
-    }
-
-    /**
-     * Issues a Notification to inform the user that server has sent a message.
-     */
     private static void generateNotification(Context context, String message) {
         long when = System.currentTimeMillis();
         NotificationManager notificationManager = (NotificationManager)
@@ -84,4 +46,5 @@ public class GCMIntentService extends GCMBaseIntentService {
         notification.defaults |= Notification.DEFAULT_VIBRATE;
         notificationManager.notify(0, notification);
     }
+
 }

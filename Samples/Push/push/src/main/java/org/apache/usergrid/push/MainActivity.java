@@ -10,6 +10,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 
+import com.google.firebase.iid.FirebaseInstanceId;
+
 import org.apache.usergrid.android.UsergridAsync;
 import org.apache.usergrid.android.UsergridSharedDevice;
 import org.apache.usergrid.android.callbacks.UsergridResponseCallback;
@@ -19,14 +21,15 @@ import org.apache.usergrid.java.client.UsergridClientConfig;
 import org.apache.usergrid.java.client.UsergridEnums;
 import org.apache.usergrid.java.client.UsergridRequest;
 import org.apache.usergrid.java.client.response.UsergridResponse;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static String ORG_ID = "rwalsh";
-    public static String APP_ID = "sandbox";
-    public static String BASE_URL = "https://api.usergrid.com";
+    public static String ORG_ID = "rjwalsh";
+    public static String APP_ID = "sdk.demo";
+    public static String BASE_URL = "https://apibaas-trial.apigee.net";
 
     public static String NOTIFIER_ID = "fcmAndroidPush";
     public static String FCM_TOKEN = "";
@@ -89,6 +92,16 @@ public class MainActivity extends AppCompatActivity {
             }
             this.savePrefs();
             USERGRID_PREFS_NEEDS_REFRESH = false;
+        } else {
+            try {
+                FCM_TOKEN = FirebaseInstanceId.getInstance().getToken();
+                if( FCM_TOKEN != null ) {
+                    UsergridAsync.applyPushToken(this, FCM_TOKEN, MainActivity.NOTIFIER_ID, new UsergridResponseCallback() {
+                        @Override
+                        public void onResponse(@NotNull UsergridResponse response) { }
+                    });
+                }
+            } catch (Exception ignored) { }
         }
         super.onResume();
     }
