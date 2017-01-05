@@ -6,45 +6,48 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 
-import com.google.android.gcm.GCMRegistrar;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import org.apache.usergrid.android.UsergridAsync;
 import org.apache.usergrid.android.UsergridSharedDevice;
 import org.apache.usergrid.android.callbacks.UsergridResponseCallback;
 import org.apache.usergrid.java.client.Usergrid;
+import org.apache.usergrid.java.client.UsergridClient;
 import org.apache.usergrid.java.client.UsergridClientConfig;
 import org.apache.usergrid.java.client.UsergridEnums;
 import org.apache.usergrid.java.client.UsergridRequest;
 import org.apache.usergrid.java.client.response.UsergridResponse;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static String ORG_ID = "rwalsh";
-    public static String APP_ID = "sandbox";
-    public static String BASE_URL = "https://api.usergrid.com";
+    public static String ORG_ID = "rjwalsh";
+    public static String APP_ID = "sdk.demo";
+    public static String BASE_URL = "https://apibaas-trial.apigee.net";
 
-    public static String NOTIFIER_ID = "androidPushNotifier";
-    public static String GCM_SENDER_ID = "186455511595";
-    public static String GCM_REGISTRATION_ID = "";
+    public static String NOTIFIER_ID = "fcmAndroidPush";
+    public static String FCM_TOKEN = "";
 
     public static boolean USERGRID_PREFS_NEEDS_REFRESH = false;
     private static final String USERGRID_PREFS_FILE_NAME = "usergrid_prefs.xml";
+
+    public static UsergridClient initUsergridInstance() {
+        return Usergrid.initSharedInstance(ORG_ID,APP_ID,BASE_URL);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        initUsergridInstance();
         retrieveSavedPrefs();
-        Usergrid.initSharedInstance(ORG_ID,APP_ID,BASE_URL);
-        MainActivity.registerPush(this);
 
         final ImageButton infoButton = (ImageButton) findViewById(R.id.infoButton);
         if( infoButton != null ) {
@@ -81,14 +84,24 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         if( USERGRID_PREFS_NEEDS_REFRESH ) {
             Usergrid.setConfig(new UsergridClientConfig(ORG_ID,APP_ID,BASE_URL));
-            if( GCM_REGISTRATION_ID != null && !GCM_REGISTRATION_ID.isEmpty() ) {
-                UsergridAsync.applyPushToken(this, GCM_REGISTRATION_ID, MainActivity.NOTIFIER_ID, new UsergridResponseCallback() {
+            if( FCM_TOKEN != null && !FCM_TOKEN.isEmpty() ) {
+                UsergridAsync.applyPushToken(this, FCM_TOKEN, MainActivity.NOTIFIER_ID, new UsergridResponseCallback() {
                     @Override
                     public void onResponse(@NonNull UsergridResponse response) { }
                 });
             }
             this.savePrefs();
             USERGRID_PREFS_NEEDS_REFRESH = false;
+        } else {
+            try {
+                FCM_TOKEN = FirebaseInstanceId.getInstance().getToken();
+                if( FCM_TOKEN != null ) {
+                    UsergridAsync.applyPushToken(this, FCM_TOKEN, MainActivity.NOTIFIER_ID, new UsergridResponseCallback() {
+                        @Override
+                        public void onResponse(@NotNull UsergridResponse response) { }
+                    });
+                }
+            } catch (Exception ignored) { }
         }
         super.onResume();
     }
@@ -99,21 +112,9 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    public static void registerPush(Context context) {
-        final String regId = GCMRegistrar.getRegistrationId(context);
-        if ("".equals(regId)) {
-            GCMRegistrar.register(context, GCM_SENDER_ID);
-        } else {
-            if (GCMRegistrar.isRegisteredOnServer(context)) {
-                Log.i("", "Already registered with GCM");
-            } else {
-                MainActivity.registerPush(context, regId);
-            }
-        }
-    }
-
     public static void registerPush(@NonNull final Context context, @NonNull final String registrationId) {
-        MainActivity.GCM_REGISTRATION_ID = registrationId;
+        initUsergridInstance();
+        MainActivity.FCM_TOKEN = registrationId;
         UsergridAsync.applyPushToken(context, registrationId, MainActivity.NOTIFIER_ID, new UsergridResponseCallback() {
             @Override
             public void onResponse(@NonNull UsergridResponse response) {

@@ -21,9 +21,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
-import com.google.android.gcm.GCMRegistrar;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import org.apache.usergrid.activityfeed.activities.FeedActivity;
 import org.apache.usergrid.activityfeed.callbacks.GetFeedMessagesCallback;
@@ -51,13 +50,12 @@ import java.util.List;
 
 public final class UsergridManager {
 
-    private static final String ORG_ID = "rwalsh";
-    private static final String APP_ID = "sandbox";
-    private static final String BASE_URL = "https://api.usergrid.com";
-    private static final String ANDROID_NOTIFIER_ID = "androidPushNotifier";
+    private static final String ORG_ID = "rjwalsh";
+    private static final String APP_ID = "sdk.demo";
+    private static final String BASE_URL = "https://apibaas-trial.apigee.net";
+    private static final String ANDROID_NOTIFIER_ID = "fcmActivityFeed";
 
-    public static String GCM_SENDER_ID = "186455511595";
-    public static String GCM_REGISTRATION_ID = "";
+    public static String FCM_TOKEN = "";
 
     private UsergridManager() {}
 
@@ -73,20 +71,16 @@ public final class UsergridManager {
     }
 
     public static void registerPush(Context context) {
-        final String regId = GCMRegistrar.getRegistrationId(context);
-        if ("".equals(regId)) {
-            GCMRegistrar.register(context, GCM_SENDER_ID);
-        } else {
-            if (GCMRegistrar.isRegisteredOnServer(context)) {
-                Log.i("", "Already registered with GCM");
-            } else {
-                registerPush(context, regId);
+        try {
+            FCM_TOKEN = FirebaseInstanceId.getInstance().getToken();
+            if( FCM_TOKEN != null ) {
+                registerPush(context, FCM_TOKEN);
             }
-        }
+        } catch (Exception ignored) {}
     }
 
     public static void registerPush(@NonNull final Context context, @NonNull final String registrationId) {
-        GCM_REGISTRATION_ID = registrationId;
+        FCM_TOKEN = registrationId;
         UsergridAsync.applyPushToken(context, registrationId, ANDROID_NOTIFIER_ID, new UsergridResponseCallback() {
             @Override
             public void onResponse(@NonNull UsergridResponse response) {

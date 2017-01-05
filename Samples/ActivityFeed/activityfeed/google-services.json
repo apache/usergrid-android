@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "468982482457",
+    "firebase_url": "https://activity-feed-727db.firebaseio.com",
+    "project_id": "activity-feed-727db",
+    "storage_bucket": "activity-feed-727db.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:468982482457:android:8b607d8ef09dec5c",
+        "android_client_info": {
+          "package_name": "org.apache.usergrid.activityfeed"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "468982482457-l9cjoki8hotacuouj75b73mpbc827bjo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAIbLcFcdh64wNWb7CZAt3jyj3tauZujqM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
